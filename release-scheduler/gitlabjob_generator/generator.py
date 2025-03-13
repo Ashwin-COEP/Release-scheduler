@@ -2,28 +2,29 @@ import sys
 
 sys.path.append("./")
 from auth import authenticator
-from data.scheduler import release_frequency
+from data.gitlab.generator.template import GeneratorTemplate
 from env.env import Env
 import requests
 
-class Scheduler:
+class Generator:
     def query_model(self, prompt: str, headers):
         payload = {"inputs": prompt, "parameters": {"max_new_tokens": 200, "temperature": 0.2}}
         env = Env()
-        response = requests.post(env.Falcon_API_URL, headers=headers, json=payload)
+        response = requests.post(env.StarCoder_API_URL, headers=headers, json=payload)
         return response.json()
-    def GetSchedule(self):
+    def GenerateJob(self):
         authenticator_instance = authenticator.Authenticator()
         auth_header = authenticator_instance.getAuthenticationHeader()
         headers = {}
         headers.update(auth_header)
-        scheduler_instance = release_frequency.ReleaseFrequency()
-        frequency_table = scheduler_instance.getFrequencyTable()
-        instruction_template = scheduler_instance.getInstructionTemplate()
-        question = input("Enter your question about optimal release frequency: ")
+        generator_instance = GeneratorTemplate()
+        job = generator_instance.getGeneratorTemplate()
+        instruction_template = generator_instance.getInstructionTemplate()
+        question = input("Enter details of the GitLab job: ")
+        question = generator_instance.fill_missing_question_values(question)
         prompt = instruction_template.format(
-            additional_context=scheduler_instance.getAdditionalContext(),
-            table=frequency_table,
+            additional_context=generator_instance.getAdditionalContext(),
+            gitlabjobtemplate=job,
             question=question
         )
         result = self.query_model(prompt,headers)
