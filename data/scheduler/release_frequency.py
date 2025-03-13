@@ -23,9 +23,7 @@ class ReleaseFrequency:
         "Answer:"
     )
     additional_context = """
-The table above details stable release data from several open-source repositories.
-It serves as a reference to understand how code changes, bug reports, and contributor counts
-influence the release frequency. This context helps in assessing the optimal release frequency.
+   If the question asks about healthcare, military or government code, provide a higher number of days for stability and compliance testing.
 """
     def getInstructionTemplate(self):
         return self.instruction_template
